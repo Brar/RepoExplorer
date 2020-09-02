@@ -55,9 +55,12 @@ namespace RepoExplorer
                 return;
 
             _disposed = true;
-            await _output.FlushAsync();
-            _output.Close();
-            await _output.DisposeAsync();
+            if(_output != Console.Out)
+            {
+                await _output.FlushAsync();
+                _output.Close();
+                await _output.DisposeAsync();
+            }
         }
     }
 }
