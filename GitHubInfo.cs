@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Octokit.GraphQL;
 using static Octokit.GraphQL.Variable;
@@ -77,7 +78,7 @@ namespace RepoExplorer
                 var mi = milestones.ToArray();
                 foreach (var m in mi)
                 {
-                    if (milestone != null && m.Title != milestone)
+                    if (milestone != null && !Regex.IsMatch(m.Title, milestone))
                         continue;
 
                     await Console.Out.WriteLineAsync($"Fetching issue information for milestone {m.Title}...");
