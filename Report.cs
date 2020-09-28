@@ -9,11 +9,13 @@ namespace RepoExplorer
 {
     public class Report : IAsyncDisposable
     {
+        private readonly string _user;
         private readonly TextWriter _output;
         private volatile bool _disposed;
 
-        public Report(TextWriter output)
+        public Report(string user, TextWriter output)
         {
+            _user = user;
             _output = output;
         }
 
@@ -25,7 +27,7 @@ namespace RepoExplorer
             await _output.WriteLineAsync($"## Repository {repositoryInfo.Name}:{Environment.NewLine}");
             foreach (var milestone in repositoryInfo.Milestones.Where(m=>m.Issues.Any(i=> i.IsClosed && i.Assignees.Any())).OrderByDescending(m => m.Title))
             {
-                await _output.WriteLineAsync($"### [Milestone {milestone.Title}](https://github.com/npgsql/npgsql/issues?q=is%3Aissue+milestone%3A{HttpUtility.UrlEncode(milestone.Title)}):{Environment.NewLine}");
+                await _output.WriteLineAsync($"### [Milestone {milestone.Title}](https://github.com/{_user}/{repositoryInfo.Name}/issues?q=is%3Aissue+milestone%3A{HttpUtility.UrlEncode(milestone.Title)}):{Environment.NewLine}");
 
                 var assignees = milestone.Issues.Where(i => i.IsClosed).SelectMany(i => i.Assignees).Distinct().ToArray();
                 List<(string assignee, int contributions)> stats = new List<(string assignees, int contributions)>(assignees.Length);
@@ -40,7 +42,7 @@ namespace RepoExplorer
                 foreach (var (assignee, contributions) in stats.OrderByDescending(s => s.contributions).ThenBy(s => s.assignee))
                 {
                     var assigneeUrl = $"[@{assignee}](https://github.com/{assignee})";
-                    var contributionsUrl = $"[{contributions}](https://github.com/npgsql/npgsql/issues?q=is%3Aissue+milestone%3A{HttpUtility.UrlEncode(milestone.Title)}+is%3Aclosed+assignee%3A{HttpUtility.UrlEncode(assignee)})";
+                    var contributionsUrl = $"[{contributions}](https://github.com/{_user}/{repositoryInfo.Name}/issues?q=is%3Aissue+milestone%3A{HttpUtility.UrlEncode(milestone.Title)}+is%3Aclosed+assignee%3A{HttpUtility.UrlEncode(assignee)})";
                     await _output.WriteLineAsync($"| {assigneeUrl,-82} | {contributionsUrl,119} |");
                 }
 
