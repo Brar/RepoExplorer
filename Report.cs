@@ -37,13 +37,24 @@ namespace RepoExplorer
                     stats.Add((assignee, milestone.Issues.Count(i => i.IsClosed && i.Assignees.Contains(assignee))));
                 }
 
-                await _output.WriteLineAsync("| Contributor                                                                        | Assigned issues                                                                                                         |");
-                await _output.WriteLineAsync("| ---------------------------------------------------------------------------------- | -----------------------------------------------------------------------------------------------------------------------:|");
+
+                var assigneeContributionUrls = new List<(string assigneeUrl, string contributionsUrl)>();
+                var maxAssigneeUrlLength = 0;
+                var maxContributionsUrlLength = 0;
                 foreach (var (assignee, contributions) in stats.OrderByDescending(s => s.contributions).ThenBy(s => s.assignee))
                 {
                     var assigneeUrl = $"[@{assignee}](https://github.com/{assignee})";
                     var contributionsUrl = $"[{contributions}](https://github.com/{_user}/{repositoryInfo.Name}/issues?q=is%3Aissue+milestone%3A{HttpUtility.UrlEncode(milestone.Title)}+is%3Aclosed+assignee%3A{HttpUtility.UrlEncode(assignee)})";
-                    await _output.WriteLineAsync($"| {assigneeUrl,-82} | {contributionsUrl,119} |");
+                    maxAssigneeUrlLength = Math.Max(maxAssigneeUrlLength, assigneeUrl.Length);
+                    maxContributionsUrlLength = Math.Max(maxContributionsUrlLength, contributionsUrl.Length);
+                    assigneeContributionUrls.Add((assigneeUrl, contributionsUrl));
+                }
+
+                await _output.WriteLineAsync($"| Contributor{new(' ', maxAssigneeUrlLength - "Contributor".Length)} | Assigned issues{new(' ', maxContributionsUrlLength - "Assigned issues".Length)} |");
+                await _output.WriteLineAsync($"| {new('-', maxAssigneeUrlLength)} | {new('-', maxContributionsUrlLength)}:|");
+                foreach (var (assigneeUrl, contributionsUrl) in assigneeContributionUrls)
+                {
+                    await _output.WriteLineAsync($"| {assigneeUrl}{new(' ', maxAssigneeUrlLength - assigneeUrl.Length)} | {contributionsUrl}{new(' ', maxContributionsUrlLength - contributionsUrl.Length)} |");
                 }
 
                 await _output.WriteLineAsync();
