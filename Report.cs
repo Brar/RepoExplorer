@@ -25,9 +25,9 @@ namespace RepoExplorer
                 throw new ObjectDisposedException(nameof(Report));
 
             await _output.WriteLineAsync($"## Repository {repositoryInfo.Name}:{Environment.NewLine}");
-            foreach (var milestone in repositoryInfo.Milestones.Where(m=>m.Issues.Any(i=> i.IsClosed && i.Assignees.Any())).OrderByDescending(m => m.Title))
+            foreach (var milestone in repositoryInfo.Milestones.Where(m=>m.Issues.Any(i=> i.IsClosed && i.Assignees.Any() && Version.TryParse(m.Title, out _))).OrderByDescending(m => Version.Parse(m.Title)))
             {
-                await _output.WriteLineAsync($"### [Milestone {milestone.Title}](https://github.com/{_user}/{repositoryInfo.Name}/issues?q=is%3Aissue+milestone%3A{HttpUtility.UrlEncode(milestone.Title)}):{Environment.NewLine}");
+                await _output.WriteLineAsync($"### [Milestone {milestone.Title}](https://github.com/{_user}/{repositoryInfo.Name}/issues?q=is%3Aissue+milestone%3A{HttpUtility.UrlEncode(milestone.Title)}){Environment.NewLine}");
 
                 var assignees = milestone.Issues.Where(i => i.IsClosed).SelectMany(i => i.Assignees).Distinct().ToArray();
                 List<(string assignee, int contributions)> stats = new List<(string assignees, int contributions)>(assignees.Length);
@@ -46,7 +46,6 @@ namespace RepoExplorer
                     await _output.WriteLineAsync($"| {assigneeUrl,-82} | {contributionsUrl,119} |");
                 }
 
-                await _output.WriteLineAsync();
                 await _output.WriteLineAsync();
             }
         }

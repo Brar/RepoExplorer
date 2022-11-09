@@ -11,17 +11,19 @@ namespace RepoExplorer
     {
         static async Task<int> Main(string[] args)
         {
-            // Create a root command with some options
-            var rootCommand = new RootCommand
-            {
-                new Option<string>(new []{"--user", "-u"}, "The user whose repositories should be queried"),
-                new Option<string?>(new []{"--repository", "-r"}, "The repository to be queried"),
-                new Option<string?>(new []{"--milestone", "-m"}, "The milestone to be queried"),
-                new Option<FileInfo?>(new []{"--output-file", "-o"}, "Write to this file instead of STDOUT"),
-            };
+            var userOption =
+                new Option<string>(new[] { "--user", "-u" }, "The user whose repositories should be queried");
+            var repositoryOption = new Option<string?>(new[] { "--repository", "-r" }, "The repository to be queried");
+            var milestoneOption = new Option<string?>(new[] { "--milestone", "-m" }, "The milestone to be queried");
+            var outputFileOption =
+                new Option<FileInfo?>(new[] { "--output-file", "-o" }, "Write to this file instead of STDOUT");
+            var rootCommand = new RootCommand("Github repository explorer");
+            rootCommand.AddOption(userOption);
+            rootCommand.AddOption(repositoryOption);
+            rootCommand.AddOption(milestoneOption);
+            rootCommand.AddOption(outputFileOption);
 
-            rootCommand.Description = "Github repository explorer";
-            rootCommand.Handler = CommandHandler.Create<string, string?, string?, FileInfo?>(Run);
+            rootCommand.SetHandler(Run, userOption, repositoryOption, milestoneOption, outputFileOption);
             return await rootCommand.InvokeAsync(args);
         }
 
