@@ -40,7 +40,7 @@ namespace RepoExplorer
                 await Console.Out.WriteLineAsync();
 
                 var github = new GitHubInfo(user, accessToken);
-                await using var report = new Report(user, outputFile != null ? new StreamWriter(outputFile.OpenWrite(), Encoding.UTF8) : Console.Out);
+                await using var report = new Report(user, outputFile != null ? new StreamWriter(outputFile.Open(FileMode.CreateNew, FileAccess.Write, FileShare.Read), Encoding.UTF8) : Console.Out);
 
                 await foreach (var repoInfo in github.GetRepositoryInfos(repository, milestone))
                 {
