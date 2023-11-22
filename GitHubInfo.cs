@@ -9,7 +9,7 @@ using static Octokit.GraphQL.Variable;
 
 namespace RepoExplorer
 {
-    public class GitHubInfo
+    public class GitHubInfo(string login, string accessToken)
     {
         static readonly ICompiledQuery<IEnumerable<string>>? AllRepositoryNamesQuery = new Query()
             .RepositoryOwner(Var("owner"))
@@ -36,21 +36,14 @@ namespace RepoExplorer
             .Issue(Var("issueNumber"))
             .Select(i => i.Assignees(null, null, null, null).AllPages().Select(a => a.Login).ToList()).Compile();
 
-        readonly Connection _connection;
-        readonly Dictionary<string, object> _defaultVariables;
-
-        public GitHubInfo(string login, string accessToken)
+        readonly Connection _connection = new(
+            new(nameof(RepoExplorer),
+                typeof(Program).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version),
+            accessToken);
+        readonly Dictionary<string, object> _defaultVariables = new()
         {
-            _defaultVariables = new()
-            {
-                {"owner", login}
-            };
-            _connection =
-                new(
-                    new(nameof(RepoExplorer),
-                        typeof(Program).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version),
-                    accessToken);
-        }
+            {"owner", login}
+        };
 
         public async IAsyncEnumerable<RepositoryInfo> GetRepositoryInfos(string? repository, string? milestone)
         {

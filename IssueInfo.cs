@@ -2,16 +2,10 @@
 
 namespace RepoExplorer
 {
-    public class IssueInfo
+    public class IssueInfo(int number, bool isClosed)
     {
-        public IssueInfo(int number, bool isClosed)
-        {
-            Number = number;
-            IsClosed = isClosed;
-        }
-
-        public int Number { get; }
-        public bool IsClosed { get; }
+        public int Number { get; } = number;
+        public bool IsClosed { get; } = isClosed;
         public List<string> Assignees { get; } = new();
     }
 }
