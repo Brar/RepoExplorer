@@ -12,6 +12,6 @@ namespace RepoExplorer
 
         public int Number { get; }
         public bool IsClosed { get; }
-        public List<string> Assignees { get; } = new List<string>();
+        public List<string> Assignees { get; } = new();
     }
 }

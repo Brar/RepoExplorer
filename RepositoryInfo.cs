@@ -11,6 +11,6 @@ namespace RepoExplorer
         }
 
         public string Name { get; }
-        public List<MilestoneInfo> Milestones { get; } = new List<MilestoneInfo>();
+        public List<MilestoneInfo> Milestones { get; } = new();
     }
 }

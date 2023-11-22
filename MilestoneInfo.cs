@@ -11,6 +11,6 @@ namespace RepoExplorer
         }
 
         public string Title { get; }
-        public List<IssueInfo> Issues { get; } = new List<IssueInfo>();
+        public List<IssueInfo> Issues { get; } = new();
     }
 }

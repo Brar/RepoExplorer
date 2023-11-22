@@ -41,13 +41,13 @@ namespace RepoExplorer
 
         public GitHubInfo(string login, string accessToken)
         {
-            _defaultVariables = new Dictionary<string, object>
+            _defaultVariables = new()
             {
                 {"owner", login}
             };
             _connection =
-                new Connection(
-                    new ProductHeaderValue(nameof(RepoExplorer),
+                new(
+                    new(nameof(RepoExplorer),
                         typeof(Program).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version),
                     accessToken);
         }
@@ -62,7 +62,7 @@ namespace RepoExplorer
                     await Console.Out.WriteLineAsync($"Fetching milestone information for repository {repoName}...");
                     yield return await GetRepositoryInfoWithAssignees(repoName,
                         await _connection.Run(MilestonesWithIssueNumbersQuery,
-                            new Dictionary<string, object>(_defaultVariables) {{"repository", repoName}}));
+                            new(_defaultVariables) {{"repository", repoName}}));
                 }
             }
             else
@@ -70,7 +70,7 @@ namespace RepoExplorer
                 await Console.Out.WriteLineAsync($"Fetching milestone information for repository {repository}...");
                 yield return await GetRepositoryInfoWithAssignees(repository,
                     await _connection.Run(MilestonesWithIssueNumbersQuery,
-                        new Dictionary<string, object>(_defaultVariables) {{"repository", repository}}));
+                        new(_defaultVariables) {{"repository", repository}}));
             }
 
             async Task<RepositoryInfo> GetRepositoryInfoWithAssignees(string repositoryName, IEnumerable<MilestoneInfo> milestones)
@@ -86,12 +86,12 @@ namespace RepoExplorer
                     {
                         await Console.Out.WriteLineAsync($"Fetching assignee information for issue #{issue.Number}...");
                         issue.Assignees.AddRange(await _connection.Run(AssigneesQuery,
-                            new Dictionary<string, object>(_defaultVariables)
+                            new(_defaultVariables)
                                 {{"repository", repositoryName}, {"issueNumber", issue.Number}}));
                     }
                 }
 
-                return new RepositoryInfo(repositoryName, mi);
+                return new(repositoryName, mi);
             }
         }
     }
