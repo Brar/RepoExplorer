@@ -11,13 +11,13 @@ namespace RepoExplorer
 {
     public class GitHubInfo
     {
-        private static readonly ICompiledQuery<IEnumerable<string>>? AllRepositoryNamesQuery = new Query()
+        static readonly ICompiledQuery<IEnumerable<string>>? AllRepositoryNamesQuery = new Query()
             .RepositoryOwner(Var("owner"))
             .Repositories()
             .AllPages()
             .Select(r => r.Name).Compile();
 
-        private static readonly ICompiledQuery<IEnumerable<MilestoneInfo>>? MilestonesWithIssueNumbersQuery = new Query()
+        static readonly ICompiledQuery<IEnumerable<MilestoneInfo>>? MilestonesWithIssueNumbersQuery = new Query()
             .RepositoryOwner(Var("owner"))
             .Repository(Var("repository"))
             .Milestones()
@@ -30,14 +30,14 @@ namespace RepoExplorer
                     .Select(i => new IssueInfo(i.Number, i.Closed)).ToList()
             )).Compile();
 
-        private static readonly ICompiledQuery<List<string>>? AssigneesQuery = new Query()
+        static readonly ICompiledQuery<List<string>>? AssigneesQuery = new Query()
             .RepositoryOwner(Var("owner"))
             .Repository(Var("repository"))
             .Issue(Var("issueNumber"))
             .Select(i => i.Assignees(null, null, null, null).AllPages().Select(a => a.Login).ToList()).Compile();
 
-        private readonly Connection _connection;
-        private readonly Dictionary<string, object> _defaultVariables;
+        readonly Connection _connection;
+        readonly Dictionary<string, object> _defaultVariables;
 
         public GitHubInfo(string login, string accessToken)
         {

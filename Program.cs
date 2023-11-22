@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RepoExplorer
 {
-    class Program
+    internal class Program
     {
         static async Task<int> Main(string[] args)
         {

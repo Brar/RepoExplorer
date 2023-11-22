@@ -9,9 +9,9 @@ namespace RepoExplorer
 {
     public class Report : IAsyncDisposable
     {
-        private readonly string _user;
-        private readonly TextWriter _output;
-        private volatile bool _disposed;
+        readonly string _user;
+        readonly TextWriter _output;
+        volatile bool _disposed;
 
         public Report(string user, TextWriter output)
         {
